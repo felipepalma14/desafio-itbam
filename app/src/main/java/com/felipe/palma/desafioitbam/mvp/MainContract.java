@@ -28,8 +28,6 @@ public interface MainContract {
 
         void showProgress();
 
-        void hideProgress();
-
         void setDataToRecyclerView(List<Product> productList);
 
         void onResponseFailure(Throwable throwable);

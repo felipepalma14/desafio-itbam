@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="6dp"
+    android:background="@drawable/gradient"
     tools:context=".MainActivity">
 
     <LinearLayout
@@ -16,11 +17,16 @@
         <TextView
             android:text="Olá, Felipe Palma"
             android:gravity="center"
+            android:textSize="18sp"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
         <TextView
             android:text="Confira nossas ofertas!!!"
+
             android:gravity="center"
+            android:textSize="20sp"
+            android:textColor="@color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
 

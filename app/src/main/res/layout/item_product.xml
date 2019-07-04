@@ -3,7 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_margin="10dp"
     app:mrl_rippleAlpha="0.2"
+    app:mrl_rippleRoundedCorners="20dp"
+    app:mrl_rippleBackground="#FFFFFF"
     app:mrl_rippleColor="@color/ripple_color"
     app:mrl_rippleHover="true"
     app:mrl_rippleOverlay="true">
@@ -36,6 +39,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/constraintLayout"
             android:orientation="vertical"
+            android:gravity="center"
             android:padding="5dp">
 
             <TextView
@@ -44,16 +48,17 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="2"
+                android:textColor="@color/txt_product_name"
                 android:text="Menu name"
-                android:textSize="16sp" />
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/product_price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="$15 USD"
                 android:textColor="@color/txt_price_color"
-                android:textSize="16sp"
+                android:text="Price"
+                android:textSize="14sp"
                 android:textStyle="bold" />
 
         </LinearLayout>

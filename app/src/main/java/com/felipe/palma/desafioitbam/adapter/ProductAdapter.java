@@ -14,13 +14,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.felipe.palma.desafioitbam.R;
 import com.felipe.palma.desafioitbam.model.Product;
+import com.felipe.palma.desafioitbam.mvp.RecyclerItemClickListener;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by Felipe Palma on 03/07/2019.
@@ -30,7 +30,7 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
     private Context context;
     private List<Product> productList;
     private List<Product> productListFiltered;
-    //private ContactsAdapterListener listener;
+    private RecyclerItemClickListener listener;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public TextView product_name, product_price;
@@ -45,15 +45,15 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    //listener.onContactSelected(productListFiltered.get(getAdapterPosition()));
+                    listener.onItemClick(productListFiltered.get(getAdapterPosition()));
                 }
             });
         }
     }
 
-    public ProductAdapter(Context context, List<Product> productList) {
+    public ProductAdapter(Context context, List<Product> productList, RecyclerItemClickListener listener) {
         this.context = context;
-        //this.listener = listener;
+        this.listener = listener;
         this.productList = productList;
         this.productListFiltered = productList;
     }
@@ -70,15 +70,15 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Product product = productListFiltered.get(position);
-        Log.d("PRODUCT", product.getImage());
-        holder.product_name.setText(product.getName());
+        String productName = product.getName().substring(0,1) + product.getName().toLowerCase().substring(1,product.getName().length());
+        holder.product_name.setText(productName);
 
             String price = product.getActualPrice();//String.format(Locale.ROOT, "%,d", product.getActualPrice());
-            holder.product_price.setText(price + " com Desconto de: " + product.getDiscountPercentage());
+            holder.product_price.setText(price);
 
 
         Transformation transformation = new RoundedTransformationBuilder()
-                .cornerRadiusDp(6)
+                .cornerRadiusDp(20)
                 .oval(false)
                 .build();
 

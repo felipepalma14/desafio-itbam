@@ -3,9 +3,14 @@ package com.felipe.palma.desafioitbam;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
@@ -32,9 +37,13 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     private ProductAdapter mProductAdapter;
     private MainContract.presenter mPresenter;
+    private int mCartItemCount = 0;
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout = null;
+
+    //Para Badge
+    TextView textCartItemCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,18 +60,9 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.addItemDecoration(new ProductDividerItemDecoration(this, DividerItemDecoration.VERTICAL, 74));
+        recyclerView.addItemDecoration(new ProductDividerItemDecoration(this, DividerItemDecoration.VERTICAL, 0));
 
-        //ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(this, R.dimen.item_offset);
-        //recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
-        //recyclerView.setAdapter(mAdapter);
-
-
-//
-//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
-//        recyclerView.setLayoutManager(mLayoutManager);
-
 
         onRefresh();
 
@@ -75,8 +75,11 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
             public void run() {
                 if (Utils.isNetworkAvailable(getApplicationContext())) {
                     swipeRefreshLayout.setRefreshing(false);
-                    //fetchData();
+
                     mPresenter.requestDataFromServer();
+
+                    Toast.makeText(MainActivity.this,"Atualizandio!!!",
+                            Toast.LENGTH_LONG).show();
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
                     Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
@@ -86,9 +89,6 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         }, 1500));
     }
 
-    private void fetchData() {
-
-    }
 
     /**
      * RecyclerItem click event listener
@@ -110,15 +110,10 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     }
 
-    @Override
-    public void hideProgress() {
-
-    }
 
     @Override
     public void setDataToRecyclerView(List<Product> productList) {
-        mProductAdapter = new ProductAdapter(this, productList);
-        Log.d("DATA", productList.size()+"");
+        mProductAdapter = new ProductAdapter(this, productList, recyclerItemClickListener);
         recyclerView.setAdapter(mProductAdapter);
     }
 
@@ -133,7 +128,59 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         mPresenter.onDestroy();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.action_cart);
+
+        View actionView = MenuItemCompat.getActionView(menuItem);
+        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+
+        setupBadge();
+
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
+            }
+        });
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+
+            case R.id.action_cart: {
+                // Do something
+                mCartItemCount+=1;
+                textCartItemCount.setText(String.valueOf(mCartItemCount));
+                return true;
+            }
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupBadge() {
+         textCartItemCount.setText(String.valueOf(mCartItemCount));
+//        if (textCartItemCount != null) {
+//            if (mCartItemCount == 0) {
+//                if (textCartItemCount.getVisibility() != View.GONE) {
+//                    textCartItemCount.setVisibility(View.GONE);
+//                }
+//            } else {
+//                textCartItemCount.setText(String.valueOf(Math.min(mCartItemCount, 99)));
+//                if (textCartItemCount.getVisibility() != View.VISIBLE) {
+//                    textCartItemCount.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        }
+    }
+
 }

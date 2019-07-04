@@ -45,7 +45,6 @@ public class MainPresenterImpl implements MainContract.presenter, MainContract.G
     public void onFinished(List<Product> productArrayList) {
         if(mainView != null){
             mainView.setDataToRecyclerView(productArrayList);
-            mainView.hideProgress();
         }
     }
 
@@ -53,7 +52,6 @@ public class MainPresenterImpl implements MainContract.presenter, MainContract.G
     public void onFailure(Throwable t) {
         if(mainView != null){
             mainView.onResponseFailure(t);
-            mainView.hideProgress();
         }
     }
 

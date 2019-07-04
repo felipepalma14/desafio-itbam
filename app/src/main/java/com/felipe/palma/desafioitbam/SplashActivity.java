@@ -9,7 +9,7 @@ import android.widget.ProgressBar;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-public class ActivitySplash extends AppCompatActivity {
+public class SplashActivity extends AppCompatActivity {
 
     Boolean isCancelled = false;
     private ProgressBar progressBar;
@@ -38,7 +38,7 @@ public class ActivitySplash extends AppCompatActivity {
             public void run() {
 
                 progressBar.setVisibility(View.GONE);
-                startActivity(new Intent(ActivitySplash.this, MainActivity.class));
+                startActivity(new Intent(SplashActivity.this, MainActivity.class));
                 /*
                 if (!isCancelled) {
                     if (id == 0) {

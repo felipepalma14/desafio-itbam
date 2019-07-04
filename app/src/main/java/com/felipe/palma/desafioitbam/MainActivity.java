@@ -1,5 +1,6 @@
 package com.felipe.palma.desafioitbam;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -100,7 +101,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
             Toast.makeText(MainActivity.this,
                     "List title:  " + item.getName(),
                     Toast.LENGTH_LONG).show();
-
+            startActivity(new Intent(MainActivity.this,ProductDetailActivity.class));
         }
     };
 

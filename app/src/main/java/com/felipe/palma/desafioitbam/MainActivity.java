@@ -123,6 +123,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         Toast.makeText(MainActivity.this,
                 "Algo deu errado: " + throwable.getMessage(),
                 Toast.LENGTH_LONG).show();
+        Log.e("ERR", throwable.getMessage());
     }
 
     @Override

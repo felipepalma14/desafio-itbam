@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">Desafio ITBAM</string>
+
+
+    <!--network-->
+    <string name="no_internet">Por favor, verifique sua conexão!</string>
 </resources>

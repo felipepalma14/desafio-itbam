@@ -3,17 +3,22 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.felipe.palma.desafioitbam"
-        minSdkVersion 19
+        minSdkVersion 18
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -38,4 +43,13 @@ dependencies {
     //retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    //Picasso
+    implementation 'com.squareup.picasso:picasso:2.71828'
+
+    //Rounded Image
+    implementation 'com.makeramen:roundedimageview:2.3.0'
+
+    //Material Ripple
+    implementation 'com.balysv:material-ripple:1.0.2'
 }

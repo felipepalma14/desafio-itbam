@@ -1,6 +1,7 @@
 package com.felipe.palma.desafioitbam.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -69,6 +70,7 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Product product = productListFiltered.get(position);
+        Log.d("PRODUCT", product.getImage());
         holder.product_name.setText(product.getName());
 
             String price = product.getActualPrice();//String.format(Locale.ROOT, "%,d", product.getActualPrice());
@@ -80,13 +82,28 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
                 .oval(false)
                 .build();
 
-        Picasso.get()
-                .load("https://www.remove.bg/images/samples/combined/s1.jpg")
-                .placeholder(R.drawable.ic_loading)
-                .resize(250, 250)
-                .centerCrop()
-                .transform(transformation)
-                .into(holder.product_image);
+        if (product.getImage().isEmpty()) { //url.isEmpty()
+            Picasso.with(context)
+                    .load(R.drawable.ic_no_image)
+                    .placeholder(R.drawable.ic_loading)
+                    .error(R.drawable.ic_no_image)
+                    .resize(250, 250)
+                    .centerCrop()
+                    .transform(transformation)
+                    .into(holder.product_image);
+
+        }else{
+            Picasso.with(context)
+                    .load(product.getImage())
+                    .placeholder(R.drawable.ic_loading)
+                    .error(R.drawable.ic_no_image)
+                    .resize(250, 250)
+                    .centerCrop()
+                    .transform(transformation)
+                    .into(holder.product_image);
+        }
+
+
 
     }
 

@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
@@ -47,10 +48,20 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         mPresenter = new MainPresenterImpl(this, new GetProductsIntractorImp());
         mPresenter.requestDataFromServer();
 
-        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 2);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.addItemDecoration(new ProductDividerItemDecoration(this, DividerItemDecoration.VERTICAL, 74));
+
+        //ItemOffsetDecoration itemDecoration = new ItemOffsetDecoration(this, R.dimen.item_offset);
+        //recyclerView.addItemDecoration(itemDecoration);
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        //recyclerView.setAdapter(mAdapter);
+
+
+//
+//        RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(this);
+//        recyclerView.setLayoutManager(mLayoutManager);
 
 
         onRefresh();

@@ -1,6 +1,7 @@
 package com.felipe.palma.desafioitbam.adapter;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ import com.felipe.palma.desafioitbam.R;
 import com.felipe.palma.desafioitbam.model.Product;
 import com.felipe.palma.desafioitbam.mvp.RecyclerItemClickListener;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
+import com.mohan.ribbonview.RibbonView;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -33,14 +35,17 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
     private RecyclerItemClickListener listener;
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView product_name, product_price;
-        public ImageView product_image;
+        public TextView productName, productPrice, productRegularPrice;
+        public ImageView productImage;
+        public RibbonView productDiscount;
 
         public ViewHolder(View view) {
             super(view);
-            product_name = view.findViewById(R.id.product_name);
-            product_price = view.findViewById(R.id.product_price);
-            product_image = view.findViewById(R.id.category_image);
+            productName = view.findViewById(R.id.product_name);
+            productPrice = view.findViewById(R.id.product_price);
+            productRegularPrice = view.findViewById(R.id.product_regular_price);
+            productImage = view.findViewById(R.id.product_image);
+            productDiscount = view.findViewById(R.id.product_ribbon_discount_percentage);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -71,10 +76,19 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
     public void onBindViewHolder(ViewHolder holder, final int position) {
         final Product product = productListFiltered.get(position);
         String productName = product.getName().substring(0,1) + product.getName().toLowerCase().substring(1,product.getName().length());
-        holder.product_name.setText(productName);
 
-            String price = product.getActualPrice();//String.format(Locale.ROOT, "%,d", product.getActualPrice());
-            holder.product_price.setText(price);
+        holder.productName.setText(productName);
+        holder.productPrice.setText(product.getActualPrice());
+
+        if(!product.getDiscountPercentage().equals("")) {
+            holder.productRegularPrice.setText(product.getRegularPrice());
+            holder.productRegularPrice.setPaintFlags(holder.productRegularPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.productDiscount.setText(product.getDiscountPercentage());
+        }else{
+            holder.productRegularPrice.setVisibility(View.INVISIBLE);
+            holder.productDiscount.setVisibility(View.GONE);
+        }
+
 
 
         Transformation transformation = new RoundedTransformationBuilder()
@@ -90,7 +104,7 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
                     .resize(250, 250)
                     .centerCrop()
                     .transform(transformation)
-                    .into(holder.product_image);
+                    .into(holder.productImage);
 
         }else{
             Picasso.with(context)
@@ -100,7 +114,7 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
                     .resize(250, 250)
                     .centerCrop()
                     .transform(transformation)
-                    .into(holder.product_image);
+                    .into(holder.productImage);
         }
 
 

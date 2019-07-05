@@ -61,6 +61,7 @@
 
                 <androidx.appcompat.widget.Toolbar
                     android:id="@+id/toolbar"
+                    android:background="#29272626"
                     android:layout_width="match_parent"
                     android:layout_height="?attr/actionBarSize"
                     app:layout_collapseMode="pin"
@@ -103,7 +104,8 @@
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
                         android:text="Ayam Goreng"
-                        android:textSize="22sp"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
                         android:textStyle="bold" />
 
                     <LinearLayout
@@ -131,13 +133,13 @@
 
                             <TextView
                                 android:id="@+id/product_price"
-                                android:layout_width="wrap_content"
+                                android:layout_width="80dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="3dp"
                                 android:layout_marginRight="3dp"
                                 android:text="10 USD"
                                 android:textColor="@color/txt_price_color"
-                                android:textSize="18sp"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
 
                         </LinearLayout>
@@ -181,6 +183,7 @@
                         android:layout_marginTop="4dp"
                         android:layout_marginEnd="10dp"
                         android:layout_marginRight="10dp"
+                        android:layout_marginBottom="10dp"
                         android:gravity="center_vertical"
                         android:orientation="horizontal">
 
@@ -194,17 +197,17 @@
                                 android:layout_width="28dp"
                                 android:layout_height="28dp"
                                 android:src="@drawable/ic_tag_price"
-                                android:tint="@color/txt_price_color" />
+                                android:tint="@color/txt_regular_price_color" />
 
                             <TextView
                                 android:id="@+id/product_regular_price"
-                                android:layout_width="wrap_content"
+                                android:layout_width="80dp"
                                 android:layout_height="wrap_content"
                                 android:layout_marginLeft="3dp"
                                 android:layout_marginRight="3dp"
                                 android:text="10 USD"
-                                android:textColor="@color/txt_price_color"
-                                android:textSize="18sp"
+                                android:textColor="@color/txt_regular_price_color"
+                                android:textSize="16sp"
                                 android:textStyle="bold" />
 
                         </LinearLayout>

@@ -59,4 +59,7 @@ dependencies {
 
     //Material Ripple
     implementation 'com.balysv:material-ripple:1.0.2'
+
+    //Ribbon View
+    implementation 'com.github.mohanmanu484:RibbonView:1.2'
 }

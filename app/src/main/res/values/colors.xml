@@ -9,6 +9,7 @@
     <color name="ic_launcher_background">#EF6C00</color>
     <!--other color-->
     <color name="txt_price_color">#F80303</color>
+    <color name="txt_regular_price_color">#767676</color>
     <color name="txt_product_name">#000000</color>
     <color name="ripple_color">#dfdfdf</color>
     <color name="green">#0ecf48</color>

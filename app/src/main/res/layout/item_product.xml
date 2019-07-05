@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="10dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_margin="4dp"
     app:mrl_rippleAlpha="0.2"
     app:mrl_rippleRoundedCorners="20dp"
     app:mrl_rippleBackground="#FFFFFF"
@@ -22,17 +23,35 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/category_image"
+                android:id="@+id/product_image"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:focusable="false"
                 android:scaleType="centerCrop"
                 app:layout_constraintDimensionRatio="H,1:1"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+
+
+
         </androidx.constraintlayout.widget.ConstraintLayout>
+        <com.mohan.ribbonview.RibbonView
+            android:id="@+id/product_ribbon_discount_percentage"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:ems="3"
+            android:paddingLeft="8dp"
+            android:textSize="10sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            app:ribbonGravity="left"
+            app:ribbonStrokeColor="@color/white"
+            app:ribbonStrokeWidth="2dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -51,6 +70,14 @@
                 android:textColor="@color/txt_product_name"
                 android:text="Menu name"
                 android:textSize="12sp" />
+            <TextView
+                android:id="@+id/product_regular_price"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/txt_regular_price_color"
+                android:text="Price"
+                android:textSize="10sp"
+                android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/product_price"

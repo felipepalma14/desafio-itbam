@@ -1,32 +1,19 @@
 package com.felipe.palma.desafioitbam;
 
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.database.SQLException;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
-import android.os.StrictMode;
 import android.provider.Settings;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -38,32 +25,29 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.MenuItemCompat;
 
 import com.felipe.palma.desafioitbam.model.Product;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.List;
-import java.util.Locale;
-
 public class ProductDetailActivity extends AppCompatActivity {
 
     private Product mProductItem;
+    private int mCartItemCount = 0;
 
-    TextView txt_product_name, txt_product_price, txt_product_installments, txt_product_regular_price,txt_product_discount_percentage;
+    TextView txt_product_name, txt_product_price, txt_product_installments,txt_product_regular_price,txt_product_discount_percentage;
+    //Para Badge
+    TextView textCartItemCount;
+
     ImageView img_product_image;
     Button btn_cart;
+
     final Context context = this;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private AppBarLayout appBarLayout;
@@ -74,9 +58,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_product_detail);
 
         if (Config.ENABLE_RTL_MODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-            }
+            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         }
 
         getData();
@@ -110,7 +92,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsingToolbarLayout.setTitle("TEste CAtegoria");
+                    collapsingToolbarLayout.setTitle("Detalhes do Produto");
                     isShow = true;
                 } else if (isShow) {
                     collapsingToolbarLayout.setTitle("");
@@ -159,10 +141,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     .into(img_product_image);
         }
 
-        img_product_image.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-            }
+        img_product_image.setOnClickListener(view -> {
         });
 
         txt_product_price.setText(mProductItem.getActualPrice());
@@ -235,8 +214,23 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_list, menu);
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.action_cart);
+
+        View actionView = MenuItemCompat.getActionView(menuItem);
+        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+
+        setupBadge();
+
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
+            }
+        });
+
+        return true;
     }
 
     @Override
@@ -246,55 +240,26 @@ public class ProductDetailActivity extends AppCompatActivity {
                 onBackPressed();
                 break;
 
-            case R.id.cart:
+            case R.id.action_cart:
+                mCartItemCount+=1;
+                textCartItemCount.setText(String.valueOf(mCartItemCount));
+                return true;
 //                Intent intent = new Intent(getApplicationContext(), ActivityCart.class);
 //                intent.putExtra("tax", resp_tax);
 //                intent.putExtra("currency_code", resp_currency_code);
 //                startActivity(intent);
-                break;
+//                break;
 
-            case R.id.share:
-                //requestStoragePermission();
-                break;
+//            case R.id.share:
+//                //requestStoragePermission();
+//                break;
 
             default:
                 return super.onOptionsItemSelected(menuItem);
         }
         return true;
     }
-/*
-    @TargetApi(16)
-    private void requestStoragePermission() {
-        Dexter.withActivity(ActivityProductDetail.this)
-                .withPermissions(
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE)
-                .withListener(new MultiplePermissionsListener() {
-                    @Override
-                    public void onPermissionsChecked(MultiplePermissionsReport report) {
-                        if (report.areAllPermissionsGranted()) {
-                            (new ShareTask(ActivityProductDetail.this)).execute(Config.ADMIN_PANEL_URL + "/upload/product/" + product_image);
-                        }
-                        if (report.isAnyPermissionPermanentlyDenied()) {
-                            showSettingsDialog();
-                        }
-                    }
 
-                    @Override
-                    public void onPermissionRationaleShouldBeShown(List<PermissionRequest> permissions, PermissionToken token) {
-                        token.continuePermissionRequest();
-                    }
-                }).
-                withErrorListener(new PermissionRequestErrorListener() {
-                    @Override
-                    public void onError(DexterError error) {
-                        Toast.makeText(getApplicationContext(), "Error occurred! " + error.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .onSameThread()
-                .check();
-    }
-*/
     private void showSettingsDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(ProductDetailActivity.this);
         builder.setTitle("PERMISSAO");
@@ -320,6 +285,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         Uri uri = Uri.fromParts("package", getPackageName(), null);
         intent.setData(uri);
         startActivityForResult(intent, 101);
+    }
+
+    // REPETIDO
+    private void setupBadge() {
+        textCartItemCount.setText(String.valueOf(mCartItemCount));
     }
 
 

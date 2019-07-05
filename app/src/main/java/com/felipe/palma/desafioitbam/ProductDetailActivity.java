@@ -16,6 +16,7 @@ import android.database.SQLException;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -35,9 +36,11 @@ import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.felipe.palma.desafioitbam.model.Product;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.squareup.picasso.Picasso;
@@ -56,20 +59,14 @@ import java.util.Locale;
 
 public class ProductDetailActivity extends AppCompatActivity {
 
+    private Product mProductItem;
 
-    long product_id;
-    TextView txt_product_name, txt_product_price, txt_product_quantity;
-    private String product_name, product_image, category_name, product_status, currency_code, product_description;
-    private double product_price;
-    private int product_quantity;
-    WebView txt_product_description;
+    TextView txt_product_name, txt_product_price, txt_product_installments, txt_product_regular_price,txt_product_discount_percentage;
     ImageView img_product_image;
     Button btn_cart;
     final Context context = this;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private AppBarLayout appBarLayout;
-    double resp_tax;
-    String resp_currency_code;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +83,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         initComponent();
         displayData();
         setupToolbar();
-        //makeJsonObjectRequest();
     }
 
     public void setupToolbar() {
@@ -114,7 +110,7 @@ public class ProductDetailActivity extends AppCompatActivity {
                     scrollRange = appBarLayout.getTotalScrollRange();
                 }
                 if (scrollRange + verticalOffset == 0) {
-                    collapsingToolbarLayout.setTitle(category_name);
+                    collapsingToolbarLayout.setTitle("TEste CAtegoria");
                     isShow = true;
                 } else if (isShow) {
                     collapsingToolbarLayout.setTitle("");
@@ -126,33 +122,42 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     public void getData() {
         Intent intent = getIntent();
-        product_id = intent.getLongExtra("product_id", 0);
-        product_name = intent.getStringExtra("title");
-        product_image = intent.getStringExtra("image");
-        product_price = intent.getDoubleExtra("product_price", 0);
-        product_description = intent.getStringExtra("product_description");
-        product_quantity = intent.getIntExtra("product_quantity", 0);
-        product_status = intent.getStringExtra("product_status");
-        currency_code = intent.getStringExtra("currency_code");
-        category_name = intent.getStringExtra("category_name");
+        mProductItem = (Product) intent.getSerializableExtra("PRODUCT_ITEM");
+
+
     }
 
     public void initComponent() {
         txt_product_name = findViewById(R.id.product_name);
         img_product_image = findViewById(R.id.product_image);
         txt_product_price = findViewById(R.id.product_price);
-        txt_product_description = findViewById(R.id.product_description);
-        txt_product_quantity = findViewById(R.id.product_quantity);
+        txt_product_regular_price = findViewById(R.id.product_regular_price);
+        txt_product_discount_percentage = findViewById(R.id.product_discount_percentage);
+        txt_product_installments = findViewById(R.id.product_installments);
         btn_cart = findViewById(R.id.btn_add_cart);
     }
 
     public void displayData() {
-        txt_product_name.setText("TESTE");
 
-        Picasso.with(this)
-                .load("https://d3l7rqep7l31az.cloudfront.net/images/products/20002612_612_catalog_1.jpg?1459531023")
-                .placeholder(R.drawable.ic_loading)
-                .into(img_product_image);
+        txt_product_name.setText(mProductItem.getName());
+
+        if (mProductItem.getImage().isEmpty()){
+            Picasso.with(this)
+                    .load(R.drawable.ic_no_image)
+                    .placeholder(R.drawable.ic_loading)
+                    .error(R.drawable.ic_no_image)
+                    .resize(250, 250)
+                    .centerCrop()
+                    .into(img_product_image);
+        }else {
+            Picasso.with(this)
+                    .load(mProductItem.getImage())
+                    .placeholder(R.drawable.ic_loading)
+                    .error(R.drawable.ic_no_image)
+                    .resize(250, 250)
+                    .centerCrop()
+                    .into(img_product_image);
+        }
 
         img_product_image.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,74 +165,35 @@ public class ProductDetailActivity extends AppCompatActivity {
             }
         });
 
-        if (Config.ENABLE_DECIMAL_ROUNDING) {
-            String price = "100,00";//String.format(Locale.GERMAN, "%1$,.0f", "100");
-            txt_product_price.setText(price + " " + "00");
-        } else {
-            txt_product_price.setText(product_price + " " + "00");
+        txt_product_price.setText(mProductItem.getActualPrice());
+        if(!mProductItem.getDiscountPercentage().equals("")) {
+            txt_product_regular_price.setText(mProductItem.getRegularPrice());
+            txt_product_regular_price.setPaintFlags(txt_product_price.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            txt_product_discount_percentage.setText(mProductItem.getDiscountPercentage());
+
+        }else{
+            LinearLayout mLinearLayout = findViewById(R.id.layout_discount);
+
+            mLinearLayout.setVisibility(View.GONE);
         }
 
-        txt_product_quantity.setText("1" + " " + "100");
-        product_status = "Available";
-        if (product_status.equals("Available")) {
-            btn_cart.setText("ADD");
+        txt_product_installments.setText(mProductItem.getInstallments());
+
+        if (mProductItem.getOnSale()) {
+            btn_cart.setText("Adicionar no Carrinho");
             btn_cart.setBackgroundResource(R.color.available);
-            btn_cart.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    inputDialog();
-                }
-            });
+            btn_cart.setOnClickListener(v -> inputDialog());
         } else {
             btn_cart.setEnabled(false);
-            btn_cart.setText("ADD CART");
+            btn_cart.setText("Desculpe, não temos em estoque");
             btn_cart.setBackgroundResource(R.color.sold);
         }
 
-        txt_product_description.setBackgroundColor(Color.parseColor("#ffffff"));
-        txt_product_description.setFocusableInTouchMode(false);
-        txt_product_description.setFocusable(false);
-        txt_product_description.getSettings().setDefaultTextEncodingName("UTF-8");
-
-        WebSettings webSettings = txt_product_description.getSettings();
-        Resources res = getResources();
-        int fontSize = 12;//res.getInteger(R.integer.font_size);
-        webSettings.setDefaultFontSize(fontSize);
-        webSettings.setJavaScriptEnabled(true);
-
-        String mimeType = "text/html; charset=UTF-8";
-        String encoding = "utf-8";
-        String htmlText = product_description;
-
-        String text = "<html><head>"
-                + "<style type=\"text/css\">body{color: #525252;}"
-                + "</style></head>"
-                + "<body>"
-                + htmlText
-                + "</body></html>";
-
-        String text_rtl = "<html dir='rtl'><head>"
-                + "<style type=\"text/css\">body{color: #525252;}"
-                + "</style></head>"
-                + "<body>"
-                + htmlText
-                + "</body></html>";
-
-        if (Config.ENABLE_RTL_MODE) {
-            txt_product_description.loadDataWithBaseURL(null, text_rtl, mimeType, encoding, null);
-        } else {
-            txt_product_description.loadDataWithBaseURL(null, text, mimeType, encoding, null);
-        }
 
     }
 
     public void inputDialog() {
 
-        try {
-
-        } catch (SQLException sqle) {
-            throw sqle;
-        }
 
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(context);
 
@@ -236,24 +202,22 @@ public class ProductDetailActivity extends AppCompatActivity {
         AlertDialog.Builder alert = new AlertDialog.Builder(context);
         alert.setView(mView);
 
-        final EditText edtQuantity = (EditText) mView.findViewById(R.id.userInputDialog);
+        final EditText edtQuantity = mView.findViewById(R.id.userInputDialog);
         alert.setCancelable(false);
         int maxLength = 3;
         edtQuantity.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
         edtQuantity.setInputType(InputType.TYPE_CLASS_NUMBER);
 
-        alert.setPositiveButton("ADD", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int whichButton) {
-                String temp = edtQuantity.getText().toString();
-                int quantity = 0;
+        alert.setPositiveButton("ADD", (dialog, whichButton) -> {
+            String temp = edtQuantity.getText().toString();
+            int quantity = 0;
 
-                if (!temp.equalsIgnoreCase("")) {
-
+            if (!temp.equalsIgnoreCase("")) {
 
 
-                } else {
-                    dialog.cancel();
-                }
+
+            } else {
+                dialog.cancel();
             }
         });
 

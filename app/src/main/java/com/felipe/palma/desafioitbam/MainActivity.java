@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
                     mPresenter.requestDataFromServer();
 
-                    Toast.makeText(MainActivity.this,"Atualizandio!!!",
+                    Toast.makeText(MainActivity.this,"Atualizando!!!",
                             Toast.LENGTH_LONG).show();
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
@@ -101,7 +101,9 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
             Toast.makeText(MainActivity.this,
                     "List title:  " + item.getName(),
                     Toast.LENGTH_LONG).show();
-            startActivity(new Intent(MainActivity.this,ProductDetailActivity.class));
+            Intent mIntent = new Intent(MainActivity.this,ProductDetailActivity.class);
+            mIntent.putExtra("PRODUCT_ITEM",item);
+            startActivity(mIntent);
         }
     };
 

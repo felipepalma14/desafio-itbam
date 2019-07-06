@@ -1,7 +1,7 @@
 # desafio-itbam
 
 ## Informações
- [aqui] (attachments/Teste_Android_v3.pdf)
+ [aqui](attachments/Teste_Android_v3.pdf)
 
 # Guia desenvolvimento
 * A URL contendo os dados necessários para montagem da tela é:

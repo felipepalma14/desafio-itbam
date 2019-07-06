@@ -173,7 +173,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         /*
         Simulação de processamento
          */
-        dialog.show();
+        //dialog.show();
         new Thread(() -> this.runOnUiThread(() -> {
             try {
                 Thread.sleep(2000);
@@ -206,13 +206,15 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem menuItem) {
+        Intent intent;
         switch (menuItem.getItemId()) {
             case android.R.id.home:
-                onBackPressed();
+                intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
                 break;
 
             case R.id.action_cart:
-                Intent intent = new Intent(getApplicationContext(), CartActivity.class);
+                intent = new Intent(getApplicationContext(), CartActivity.class);
                 startActivity(intent);
                 return true;
 

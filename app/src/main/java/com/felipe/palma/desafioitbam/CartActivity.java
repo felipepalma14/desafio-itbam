@@ -126,7 +126,6 @@ public class CartActivity extends AppCompatActivity {
         /*
         Simulação de processamento
          */
-        dialog.show();
         new Thread(() -> this.runOnUiThread(() -> {
             try {
                 Thread.sleep(2000);

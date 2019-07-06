@@ -27,11 +27,14 @@ import java.util.List;
 /**
  * Created by Felipe Palma on 03/07/2019.
  */
-public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHolder>  {
+public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHolder> implements Filterable {
 
     private Context context;
+    private List<Product> productList;
     private List<Product> productListFiltered;
     private RecyclerItemClickListener listener;
+
+
 
     class ViewHolder extends RecyclerView.ViewHolder {
         TextView productName, productPrice, productRegularPrice;
@@ -53,7 +56,7 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
     public ProductAdapter(Context context, List<Product> productList, RecyclerItemClickListener listener) {
         this.context = context;
         this.listener = listener;
-        List<Product> productList1 = productList;
+        this.productList = productList;
         this.productListFiltered = productList;
     }
 
@@ -74,14 +77,23 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
         holder.productName.setText(productName);
         holder.productPrice.setText(product.getActualPrice());
 
+
+
         if(!product.getDiscountPercentage().equals("")) {
             holder.productRegularPrice.setText(product.getRegularPrice());
             holder.productRegularPrice.setPaintFlags(holder.productRegularPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.productDiscount.setText(product.getDiscountPercentage());
         }else{
-            holder.productRegularPrice.setVisibility(View.INVISIBLE);
-            holder.productDiscount.setVisibility(View.GONE);
+            if (!product.getOnSale()){
+                holder.productDiscount.setRibbonFillColor(context.getResources().getColor(R.color.grey));
+                holder.productDiscount.setText("Sem Stock");
+            }else {
+                holder.productRegularPrice.setVisibility(View.INVISIBLE);
+                holder.productDiscount.setVisibility(View.GONE);
+            }
         }
+
+
 
 
 
@@ -114,6 +126,38 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
 
 
 
+    }
+
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    productListFiltered = productList;
+                } else {
+                    List<Product> filteredList = new ArrayList<>();
+                    for (Product product : productList) {
+                        if (product.getName().toLowerCase().contains(charString.toLowerCase())) {
+                            filteredList.add(product);
+                        }
+                    }
+                    productListFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = productListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                productListFiltered = (ArrayList<Product>) filterResults.values;
+
+                notifyDataSetChanged();
+            }
+        };
     }
 
     @Override

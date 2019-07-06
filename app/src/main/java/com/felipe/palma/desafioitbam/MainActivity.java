@@ -1,5 +1,7 @@
 package com.felipe.palma.desafioitbam;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -41,11 +44,13 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     private MainContract.presenter mPresenter;
     private int cartItemsCount;
+    private ProductAdapter mProductAdapter;
 
     private Cart mCart = new Cart();
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout = null;
+    private SearchView searchView;
 
     //Para Badge
     TextView textCartItemCount;
@@ -111,7 +116,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     @Override
     public void setDataToRecyclerView(List<Product> productList) {
-        ProductAdapter mProductAdapter = new ProductAdapter(this, productList, recyclerItemClickListener);
+        mProductAdapter = new ProductAdapter(this, productList, recyclerItemClickListener);
         recyclerView.setAdapter(mProductAdapter);
     }
 
@@ -138,7 +143,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_list, menu);
 
         final MenuItem menuItem = menu.findItem(R.id.action_cart);
 
@@ -146,6 +151,9 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         textCartItemCount = actionView.findViewById(R.id.cart_badge);
 
         setupBadge();
+
+        setupSearchView(menu);
+
 
         actionView.setOnClickListener(v -> onOptionsItemSelected(menuItem));
 
@@ -180,6 +188,30 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
                 }
             }
         }
+    }
+
+
+    private void setupSearchView(Menu menu) {
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.action_search)
+                .getActionView();
+        searchView.setSearchableInfo(searchManager
+                .getSearchableInfo(getComponentName()));
+        searchView.setMaxWidth(Integer.MAX_VALUE);
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mProductAdapter.getFilter().filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String query) {
+                mProductAdapter.getFilter().filter(query);
+                return false;
+            }
+        });
     }
 
 }

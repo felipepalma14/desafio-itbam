@@ -36,10 +36,4 @@ public class CartSingleton {
         return mCartItems;
     }
 
-    public int getSizeItems(){
-        if(mCartItems.size() > 0) {
-            return mCartItems.size();
-        }
-        return 0;
-    }
 }

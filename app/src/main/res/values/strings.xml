@@ -4,4 +4,11 @@
 
     <!--network-->
     <string name="no_internet">Por favor, verifique sua conexão!</string>
+    <string name="txt_oput_of_stock">Desculpe, não temos em estoque</string>
+    <string name="txt_add_cart">Adicionar no Carrinho</string>
+    <string name="txt_finish_purchase">Muito obrigado ...</string>
+    <string name="txt_process_purchase">Processando compra</string>
+    <string name="txt_empty_cart">Carrinho Vazio</string>
+    <string name="txt_confirm">Confirmar</string>
+    <string name="txt_clear_all_cart">Limpar pedido</string>
 </resources>

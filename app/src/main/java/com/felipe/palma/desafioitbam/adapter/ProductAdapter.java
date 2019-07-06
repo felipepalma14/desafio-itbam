@@ -30,16 +30,15 @@ import java.util.List;
 public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHolder>  {
 
     private Context context;
-    private List<Product> productList;
     private List<Product> productListFiltered;
     private RecyclerItemClickListener listener;
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public TextView productName, productPrice, productRegularPrice;
-        public ImageView productImage;
-        public RibbonView productDiscount;
+    class ViewHolder extends RecyclerView.ViewHolder {
+        TextView productName, productPrice, productRegularPrice;
+        ImageView productImage;
+        RibbonView productDiscount;
 
-        public ViewHolder(View view) {
+        ViewHolder(View view) {
             super(view);
             productName = view.findViewById(R.id.product_name);
             productPrice = view.findViewById(R.id.product_price);
@@ -47,19 +46,14 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
             productImage = view.findViewById(R.id.product_image);
             productDiscount = view.findViewById(R.id.product_ribbon_discount_percentage);
 
-            view.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    listener.onItemClick(productListFiltered.get(getAdapterPosition()));
-                }
-            });
+            view.setOnClickListener(view1 -> listener.onItemClick(productListFiltered.get(getAdapterPosition())));
         }
     }
 
     public ProductAdapter(Context context, List<Product> productList, RecyclerItemClickListener listener) {
         this.context = context;
         this.listener = listener;
-        this.productList = productList;
+        List<Product> productList1 = productList;
         this.productListFiltered = productList;
     }
 
@@ -101,7 +95,7 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
                     .load(R.drawable.ic_no_image)
                     .placeholder(R.drawable.ic_loading)
                     .error(R.drawable.ic_no_image)
-                    .resize(250, 250)
+                    .resize(200, 200)
                     .centerCrop()
                     .transform(transformation)
                     .into(holder.productImage);
@@ -111,8 +105,9 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
                     .load(product.getImage())
                     .placeholder(R.drawable.ic_loading)
                     .error(R.drawable.ic_no_image)
-                    .resize(250, 250)
-                    .centerCrop()
+                    //.resize(200, 200)
+                    .centerInside()
+                    .fit()
                     .transform(transformation)
                     .into(holder.productImage);
         }

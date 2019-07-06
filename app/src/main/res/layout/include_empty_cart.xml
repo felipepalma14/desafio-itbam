@@ -11,14 +11,15 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_empty_cart"
-        android:tint="@color/green" />
+        android:tint="@color/grey" />
 
     <TextView
         android:id="@+id/no_item_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-        android:text="Vazio"
+        android:layout_margin="20dp"
+        android:textAlignment="center"
+        android:text="Comece já! Coloque produtos no carrinho e boas compras"
         android:textSize="18sp" />
 
     <com.balysv.materialripple.MaterialRippleLayout

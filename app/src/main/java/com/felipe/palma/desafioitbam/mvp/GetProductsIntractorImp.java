@@ -23,8 +23,6 @@ public class GetProductsIntractorImp implements MainContract.GetProductIntractor
         /** Call the method with parameter in the interface to get the notice data*/
         Call<ProductResponse> call = service.getProducts();
 
-        /**Log the URL called*/
-        Log.d("URL Called", call.request().url() + "");
 
         call.enqueue(new Callback<ProductResponse>() {
             @Override

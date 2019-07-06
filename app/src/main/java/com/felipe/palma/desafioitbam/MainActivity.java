@@ -15,21 +15,19 @@ import androidx.core.view.MenuItemCompat;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.felipe.palma.desafioitbam.adapter.ProductAdapter;
 import com.felipe.palma.desafioitbam.adapter.decoration.ProductDividerItemDecoration;
+import com.felipe.palma.desafioitbam.model.Cart;
 import com.felipe.palma.desafioitbam.model.Product;
 import com.felipe.palma.desafioitbam.mvp.GetProductsIntractorImp;
 import com.felipe.palma.desafioitbam.mvp.MainContract;
 import com.felipe.palma.desafioitbam.mvp.MainPresenterImpl;
 import com.felipe.palma.desafioitbam.mvp.RecyclerItemClickListener;
-import com.felipe.palma.desafioitbam.utilities.CartSingleton;
 import com.felipe.palma.desafioitbam.utilities.Utils;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -41,9 +39,10 @@ import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity  implements MainContract.MainView{
 
-    private ProductAdapter mProductAdapter;
     private MainContract.presenter mPresenter;
     private int cartItemsCount;
+
+    private Cart mCart = new Cart();
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout = null;
@@ -77,22 +76,19 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
 
     private void onRefresh() {
-        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if (Utils.isNetworkAvailable(getApplicationContext())) {
-                    swipeRefreshLayout.setRefreshing(false);
+        swipeRefreshLayout.setOnRefreshListener(() -> new Handler().postDelayed(() -> {
+            if (Utils.isNetworkAvailable(getApplicationContext())) {
+                swipeRefreshLayout.setRefreshing(false);
 
-                    mPresenter.requestDataFromServer();
+                mPresenter.requestDataFromServer();
 
-                    Toast.makeText(MainActivity.this,"Atualizando!!!",
-                            Toast.LENGTH_LONG).show();
-                } else {
-                    swipeRefreshLayout.setRefreshing(false);
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
-                }
-
+                Toast.makeText(MainActivity.this,"Atualizando!!!",
+                        Toast.LENGTH_LONG).show();
+            } else {
+                swipeRefreshLayout.setRefreshing(false);
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.no_internet), Toast.LENGTH_SHORT).show();
             }
+
         }, 1500));
     }
 
@@ -100,13 +96,10 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
     /**
      * RecyclerItem click event listener
      * */
-    private RecyclerItemClickListener recyclerItemClickListener = new RecyclerItemClickListener() {
-        @Override
-        public void onItemClick(Product item) {
-            Intent mIntent = new Intent(MainActivity.this,ProductDetailActivity.class);
-            mIntent.putExtra("PRODUCT_ITEM",item);
-            startActivity(mIntent);
-        }
+    private RecyclerItemClickListener recyclerItemClickListener = item -> {
+        Intent mIntent = new Intent(MainActivity.this,ProductDetailActivity.class);
+        mIntent.putExtra(Config.PRODUCT_ITEM,item);
+        startActivity(mIntent);
     };
 
 
@@ -118,7 +111,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     @Override
     public void setDataToRecyclerView(List<Product> productList) {
-        mProductAdapter = new ProductAdapter(this, productList, recyclerItemClickListener);
+        ProductAdapter mProductAdapter = new ProductAdapter(this, productList, recyclerItemClickListener);
         recyclerView.setAdapter(mProductAdapter);
     }
 
@@ -128,14 +121,13 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         Toast.makeText(MainActivity.this,
                 "Algo deu errado: " + throwable.getMessage(),
                 Toast.LENGTH_LONG).show();
-        Log.e("ERR", throwable.getMessage());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        cartItemsCount = CartSingleton.getInstance().getSizeItems();
-        Log.d("RESUM", cartItemsCount+"" );
+        cartItemsCount = mCart.getItems().size();
+        setupBadge();
     }
 
     @Override
@@ -151,16 +143,11 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         final MenuItem menuItem = menu.findItem(R.id.action_cart);
 
         View actionView = MenuItemCompat.getActionView(menuItem);
-        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+        textCartItemCount = actionView.findViewById(R.id.cart_badge);
 
         setupBadge();
 
-        actionView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onOptionsItemSelected(menuItem);
-            }
-        });
+        actionView.setOnClickListener(v -> onOptionsItemSelected(menuItem));
 
         return true;
     }
@@ -171,8 +158,9 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         switch (item.getItemId()) {
 
             case R.id.action_cart: {
-                // Do something
-                textCartItemCount.setText(String.valueOf(cartItemsCount));
+                Intent intent = new Intent(getApplicationContext(), CartActivity.class);
+                startActivity(intent);
+
                 return true;
             }
         }
@@ -180,19 +168,18 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
     }
 
     private void setupBadge() {
-         textCartItemCount.setText(String.valueOf(cartItemsCount));
-//        if (textCartItemCount != null) {
-//            if (mCartItemCount == 0) {
-//                if (textCartItemCount.getVisibility() != View.GONE) {
-//                    textCartItemCount.setVisibility(View.GONE);
-//                }
-//            } else {
-//                textCartItemCount.setText(String.valueOf(Math.min(mCartItemCount, 99)));
-//                if (textCartItemCount.getVisibility() != View.VISIBLE) {
-//                    textCartItemCount.setVisibility(View.VISIBLE);
-//                }
-//            }
-//        }
+        if (textCartItemCount != null) {
+            if (cartItemsCount == 0) {
+                if (textCartItemCount.getVisibility() != View.GONE) {
+                    textCartItemCount.setVisibility(View.GONE);
+                }
+            } else {
+                textCartItemCount.setText(String.valueOf(cartItemsCount));
+                if (textCartItemCount.getVisibility() != View.VISIBLE) {
+                    textCartItemCount.setVisibility(View.VISIBLE);
+                }
+            }
+        }
     }
 
 }

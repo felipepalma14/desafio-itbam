@@ -52,5 +52,9 @@ public class Utils {
         return false;
     }
 
+    public static double stringToValue(String value){
+        value = value.replace(",",".");
+        return Double.valueOf(value.substring(2));
+    }
 
 }

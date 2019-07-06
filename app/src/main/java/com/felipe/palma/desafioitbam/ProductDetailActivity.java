@@ -19,10 +19,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 
 import com.adroitandroid.chipcloud.ChipCloud;
+import com.adroitandroid.chipcloud.ChipListener;
+import com.felipe.palma.desafioitbam.model.Cart;
 import com.felipe.palma.desafioitbam.model.CartItem;
 import com.felipe.palma.desafioitbam.model.Product;
 import com.felipe.palma.desafioitbam.model.Size;
-import com.felipe.palma.desafioitbam.utilities.CartSingleton;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.squareup.picasso.Picasso;
@@ -32,6 +33,9 @@ import com.squareup.picasso.Picasso;
 public class ProductDetailActivity extends AppCompatActivity {
 
     private Product mProductItem;
+    private CartItem mCartItem = new CartItem();
+    private Cart mCart = new Cart();
+
     private int cartItemsCount;
 
     TextView txt_product_name, txt_product_price, txt_product_installments,txt_product_regular_price,txt_product_discount_percentage;
@@ -43,16 +47,12 @@ public class ProductDetailActivity extends AppCompatActivity {
     Button btn_cart;
 
     private CollapsingToolbarLayout collapsingToolbarLayout;
-    private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product_detail);
 
-        if (Config.ENABLE_RTL_MODE) {
-            getWindow().getDecorView().setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        }
 
         getData();
         initComponent();
@@ -64,7 +64,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        cartItemsCount = CartSingleton.getInstance().getSizeItems();
+        cartItemsCount = mCart.getItems().size();
     }
 
     public void setupToolbar() {
@@ -79,7 +79,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         collapsingToolbarLayout = findViewById(R.id.collapsing_toolbar);
         collapsingToolbarLayout.setTitle("");
-        appBarLayout = (AppBarLayout) findViewById(R.id.appbar);
+        AppBarLayout appBarLayout = findViewById(R.id.appbar);
         appBarLayout.setExpanded(true);
 
         appBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
@@ -104,7 +104,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     public void getData() {
         Intent intent = getIntent();
-        mProductItem = (Product) intent.getSerializableExtra("PRODUCT_ITEM");
+        mProductItem = (Product) intent.getSerializableExtra(Config.PRODUCT_ITEM);
 
 
     }
@@ -129,19 +129,18 @@ public class ProductDetailActivity extends AppCompatActivity {
                     .error(R.drawable.ic_no_image)
                     .resize(250, 250)
                     .centerCrop()
+                    //.fit()
                     .into(img_product_image);
         }else {
             Picasso.with(this)
                     .load(mProductItem.getImage())
                     .placeholder(R.drawable.ic_loading)
                     .error(R.drawable.ic_no_image)
-                    .resize(250, 250)
-                    .centerCrop()
+                    .fit()
+                    //.centerCrop()
+
                     .into(img_product_image);
         }
-
-        img_product_image.setOnClickListener(view -> {
-        });
 
         txt_product_price.setText(mProductItem.getActualPrice());
         if(!mProductItem.getDiscountPercentage().equals("")) {
@@ -155,12 +154,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         }
         txt_product_installments.setText(mProductItem.getInstallments());
         if (mProductItem.getOnSale()) {
-            btn_cart.setText("Adicionar no Carrinho");
+            btn_cart.setText(getResources().getText(R.string.txt_add_cart));
             btn_cart.setBackgroundResource(R.color.available);
             btn_cart.setOnClickListener(v -> inputDialog());
         } else {
             btn_cart.setEnabled(false);
-            btn_cart.setText("Desculpe, não temos em estoque");
+            btn_cart.setText(getResources().getText(R.string.txt_oput_of_stock));
             btn_cart.setBackgroundResource(R.color.sold);
         }
 
@@ -168,27 +167,23 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void inputDialog() {
-        dialog = ProgressDialog.show(ProductDetailActivity.this, "",
-                "Aguarde...", true);
+        dialog = ProgressDialog.show(ProductDetailActivity.this, "Adicionando Produto",
+                "Aguarde ...", true);
 
         /*
         Simulação de processamento
          */
         dialog.show();
-        new Thread(() -> {
+        new Thread(() -> this.runOnUiThread(() -> {
+            try {
+                Thread.sleep(2000);
+                dialog.dismiss();
+                addItemToCart();
 
-                this.runOnUiThread(() -> {
-                    try {
-                        Thread.sleep(2000);
-                        dialog.dismiss();
-                        addItemToCart();
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                });
-
-        }).start();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        })).start();
 
     }
 
@@ -200,16 +195,11 @@ public class ProductDetailActivity extends AppCompatActivity {
         final MenuItem menuItem = menu.findItem(R.id.action_cart);
 
         View actionView = MenuItemCompat.getActionView(menuItem);
-        textCartItemCount = (TextView) actionView.findViewById(R.id.cart_badge);
+        textCartItemCount = actionView.findViewById(R.id.cart_badge);
 
         setupBadge();
 
-        actionView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onOptionsItemSelected(menuItem);
-            }
-        });
+        actionView.setOnClickListener(v -> onOptionsItemSelected(menuItem));
 
         return true;
     }
@@ -222,14 +212,9 @@ public class ProductDetailActivity extends AppCompatActivity {
                 break;
 
             case R.id.action_cart:
-//                CartSingleton.getInstance().getCartItems().add(new CartItem());
-//                textCartItemCount.setText(String.valueOf(CartSingleton.getInstance().getSizeItems()));
+                Intent intent = new Intent(getApplicationContext(), CartActivity.class);
+                startActivity(intent);
                 return true;
-//                Intent intent = new Intent(getApplicationContext(), ActivityCart.class);
-//                intent.putExtra("tax", resp_tax);
-//                intent.putExtra("currency_code", resp_currency_code);
-//                startActivity(intent);
-//                break;
 
 
             default:
@@ -239,9 +224,20 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
 
-    // REPETIDO
     private void setupBadge() {
-        textCartItemCount.setText(String.valueOf(cartItemsCount));
+            if (textCartItemCount != null) {
+                if (cartItemsCount == 0) {
+                    if (textCartItemCount.getVisibility() != View.GONE) {
+                        textCartItemCount.setVisibility(View.GONE);
+                    }
+                } else {
+                    textCartItemCount.setText(String.valueOf(cartItemsCount));
+                    if (textCartItemCount.getVisibility() != View.VISIBLE) {
+                        textCartItemCount.setVisibility(View.VISIBLE);
+                    }
+                }
+            }
+
     }
 
     private void setupSizesProduct(){
@@ -250,10 +246,27 @@ public class ProductDetailActivity extends AppCompatActivity {
             if(size.getAvailable()) chipCloudProductSizes.addChip(size.getSize());
         }
         chipCloudProductSizes.setSelectedChip(0);
+        mCartItem.setSize(mProductItem.getSizes().get(0).getSize());
+
+        chipCloudProductSizes.setChipListener(new ChipListener() {
+            @Override
+            public void chipSelected(int index) {
+                //...
+                mCartItem.setSize(mProductItem.getSizes().get(index).getSize());
+
+            }
+            @Override
+            public void chipDeselected(int index) {
+                //...
+            }
+        });
     }
 
     private void addItemToCart(){
-        CartSingleton.getInstance().getCartItems().add(new CartItem());
+        mCartItem.setProduct(mProductItem);
+        mCartItem.setQuantity(1);
+
+        mCart.addItem(mCartItem);
         Toast.makeText(getBaseContext(), "Produto inserido no carrinho", Toast.LENGTH_LONG).show();
         startActivity(new Intent(ProductDetailActivity.this, MainActivity.class));
 

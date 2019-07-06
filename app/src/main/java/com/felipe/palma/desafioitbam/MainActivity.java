@@ -26,6 +26,7 @@ import com.felipe.palma.desafioitbam.mvp.GetProductsIntractorImp;
 import com.felipe.palma.desafioitbam.mvp.MainContract;
 import com.felipe.palma.desafioitbam.mvp.MainPresenterImpl;
 import com.felipe.palma.desafioitbam.mvp.RecyclerItemClickListener;
+import com.felipe.palma.desafioitbam.utilities.CartSingleton;
 import com.felipe.palma.desafioitbam.utilities.Utils;
 
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
     private ProductAdapter mProductAdapter;
     private MainContract.presenter mPresenter;
-    private int mCartItemCount = 0;
+    private int cartItemsCount;
 
     @BindView(R.id.recycler_view) RecyclerView recyclerView;
     @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout swipeRefreshLayout = null;
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
         INSTANCIA BUTTERKNIFE
          */
         ButterKnife.bind(this);
+
 
         mPresenter = new MainPresenterImpl(this, new GetProductsIntractorImp());
         mPresenter.requestDataFromServer();
@@ -130,6 +132,13 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        cartItemsCount = CartSingleton.getInstance().getSizeItems();
+        Log.d("RESUM", cartItemsCount+"" );
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         mPresenter.onDestroy();
@@ -163,8 +172,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
 
             case R.id.action_cart: {
                 // Do something
-                mCartItemCount+=1;
-                textCartItemCount.setText(String.valueOf(mCartItemCount));
+                textCartItemCount.setText(String.valueOf(cartItemsCount));
                 return true;
             }
         }
@@ -172,7 +180,7 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
     }
 
     private void setupBadge() {
-         textCartItemCount.setText(String.valueOf(mCartItemCount));
+         textCartItemCount.setText(String.valueOf(cartItemsCount));
 //        if (textCartItemCount != null) {
 //            if (mCartItemCount == 0) {
 //                if (textCartItemCount.getVisibility() != View.GONE) {

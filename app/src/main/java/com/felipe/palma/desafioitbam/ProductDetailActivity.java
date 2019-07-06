@@ -1,28 +1,13 @@
 package com.felipe.palma.desafioitbam;
 
-import android.app.AlertDialog;
 import android.app.ProgressDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.database.SQLException;
-import android.graphics.Color;
 import android.graphics.Paint;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.text.InputFilter;
-import android.text.InputType;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -34,8 +19,10 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 
 import com.adroitandroid.chipcloud.ChipCloud;
+import com.felipe.palma.desafioitbam.model.CartItem;
 import com.felipe.palma.desafioitbam.model.Product;
 import com.felipe.palma.desafioitbam.model.Size;
+import com.felipe.palma.desafioitbam.utilities.CartSingleton;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.squareup.picasso.Picasso;
@@ -45,7 +32,7 @@ import com.squareup.picasso.Picasso;
 public class ProductDetailActivity extends AppCompatActivity {
 
     private Product mProductItem;
-    private int mCartItemCount = 0;
+    private int cartItemsCount;
 
     TextView txt_product_name, txt_product_price, txt_product_installments,txt_product_regular_price,txt_product_discount_percentage;
     //Para Badge
@@ -72,6 +59,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         displayData();
         setupToolbar();
         setupSizesProduct();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        cartItemsCount = CartSingleton.getInstance().getSizeItems();
     }
 
     public void setupToolbar() {
@@ -184,18 +177,14 @@ public class ProductDetailActivity extends AppCompatActivity {
         dialog.show();
         new Thread(() -> {
 
-                this.runOnUiThread(new Runnable(){
+                this.runOnUiThread(() -> {
+                    try {
+                        Thread.sleep(2000);
+                        dialog.dismiss();
+                        addItemToCart();
 
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(2000);
-                            dialog.dismiss();
-                            addItemToCart();
-
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 });
 
@@ -233,8 +222,8 @@ public class ProductDetailActivity extends AppCompatActivity {
                 break;
 
             case R.id.action_cart:
-                mCartItemCount+=1;
-                textCartItemCount.setText(String.valueOf(mCartItemCount));
+//                CartSingleton.getInstance().getCartItems().add(new CartItem());
+//                textCartItemCount.setText(String.valueOf(CartSingleton.getInstance().getSizeItems()));
                 return true;
 //                Intent intent = new Intent(getApplicationContext(), ActivityCart.class);
 //                intent.putExtra("tax", resp_tax);
@@ -252,7 +241,7 @@ public class ProductDetailActivity extends AppCompatActivity {
 
     // REPETIDO
     private void setupBadge() {
-        textCartItemCount.setText(String.valueOf(mCartItemCount));
+        textCartItemCount.setText(String.valueOf(cartItemsCount));
     }
 
     private void setupSizesProduct(){
@@ -264,8 +253,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void addItemToCart(){
+        CartSingleton.getInstance().getCartItems().add(new CartItem());
         Toast.makeText(getBaseContext(), "Produto inserido no carrinho", Toast.LENGTH_LONG).show();
-        finish();
+        startActivity(new Intent(ProductDetailActivity.this, MainActivity.class));
 
     }
 }

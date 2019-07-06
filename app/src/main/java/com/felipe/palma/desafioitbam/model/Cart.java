@@ -7,20 +7,14 @@ import java.util.List;
  * Created by Felipe Palma on 05/07/2019.
  */
 public class Cart implements Serializable {
-    private List<Product> items;
+    private List<CartItem> items;
 
-    public Cart() {
-    }
 
-    public Cart(List<Product> items) {
-        this.items = items;
-    }
-
-    public List<Product> getItems() {
+    public List<CartItem> getItems() {
         return items;
     }
 
-    public void addItem(Product item){
+    public void addItem(CartItem item){
         this.getItems().add(item);
     }
 

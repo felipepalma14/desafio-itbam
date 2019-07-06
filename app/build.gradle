@@ -62,4 +62,7 @@ dependencies {
 
     //Ribbon View
     implementation 'com.github.mohanmanu484:RibbonView:1.2'
+
+    //Choice Chips
+    implementation 'com.github.adroitandroid:ChipCloud:2.2.1'
 }

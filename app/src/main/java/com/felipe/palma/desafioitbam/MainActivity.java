@@ -34,6 +34,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+/**
+ * Created by Felipe Palma on 03/07/2019.
+ */
+
 public class MainActivity extends AppCompatActivity  implements MainContract.MainView{
 
     private ProductAdapter mProductAdapter;

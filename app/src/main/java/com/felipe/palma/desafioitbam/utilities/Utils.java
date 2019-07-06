@@ -12,6 +12,9 @@ import android.util.Log;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+/**
+ * Created by Felipe Palma on 03/07/2019.
+ */
 public class Utils {
 
     Context context;
@@ -49,38 +52,5 @@ public class Utils {
         return false;
     }
 
-    public static String getFormatedDateSimple(String date_str) {
-        if (date_str != null && !date_str.trim().equals("")) {
-            SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat newFormat = new SimpleDateFormat("dd MMM yyyy");
-            try {
-                String newStr = newFormat.format(oldFormat.parse(date_str));
-                return newStr;
-            } catch (ParseException e) {
-                return "";
-            }
-        } else {
-            return "";
-        }
-    }
-
-    public static String getFormatedDate(String date_str) {
-        if (date_str != null && !date_str.trim().equals("")) {
-            SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat newFormat = new SimpleDateFormat("dd MMM yyyy, HH:mm:ss");
-            try {
-                String newStr = newFormat.format(oldFormat.parse(date_str));
-                return newStr;
-            } catch (ParseException e) {
-                return "";
-            }
-        } else {
-            return "";
-        }
-    }
-
-    public static boolean isValidEmail(String email) {
-        return !TextUtils.isEmpty(email) && android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
-    }
 
 }

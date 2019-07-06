@@ -31,11 +31,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.MenuItemCompat;
 
+import com.adroitandroid.chipcloud.ChipCloud;
 import com.felipe.palma.desafioitbam.model.Product;
+import com.felipe.palma.desafioitbam.model.Size;
 import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.squareup.picasso.Picasso;
-
+/**
+ * Created by Felipe Palma on 04/07/2019.
+ */
 public class ProductDetailActivity extends AppCompatActivity {
 
     private Product mProductItem;
@@ -44,7 +48,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     TextView txt_product_name, txt_product_price, txt_product_installments,txt_product_regular_price,txt_product_discount_percentage;
     //Para Badge
     TextView textCartItemCount;
-
+    ChipCloud chipCloudProductSizes;
     ImageView img_product_image;
     Button btn_cart;
 
@@ -65,6 +69,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         initComponent();
         displayData();
         setupToolbar();
+        setupSizesProduct();
     }
 
     public void setupToolbar() {
@@ -116,6 +121,7 @@ public class ProductDetailActivity extends AppCompatActivity {
         txt_product_regular_price = findViewById(R.id.product_regular_price);
         txt_product_discount_percentage = findViewById(R.id.product_discount_percentage);
         txt_product_installments = findViewById(R.id.product_installments);
+        chipCloudProductSizes = findViewById(R.id.product_sizes);
         btn_cart = findViewById(R.id.btn_add_cart);
     }
 
@@ -152,12 +158,9 @@ public class ProductDetailActivity extends AppCompatActivity {
 
         }else{
             LinearLayout mLinearLayout = findViewById(R.id.layout_discount);
-
             mLinearLayout.setVisibility(View.GONE);
         }
-
         txt_product_installments.setText(mProductItem.getInstallments());
-
         if (mProductItem.getOnSale()) {
             btn_cart.setText("Adicionar no Carrinho");
             btn_cart.setBackgroundResource(R.color.available);
@@ -172,7 +175,6 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void inputDialog() {
-
 
         LayoutInflater layoutInflaterAndroid = LayoutInflater.from(context);
 
@@ -250,9 +252,6 @@ public class ProductDetailActivity extends AppCompatActivity {
 //                startActivity(intent);
 //                break;
 
-//            case R.id.share:
-//                //requestStoragePermission();
-//                break;
 
             default:
                 return super.onOptionsItemSelected(menuItem);
@@ -292,5 +291,12 @@ public class ProductDetailActivity extends AppCompatActivity {
         textCartItemCount.setText(String.valueOf(mCartItemCount));
     }
 
+    private void setupSizesProduct(){
+        chipCloudProductSizes.setMode(ChipCloud.Mode.REQUIRED);
+        for (Size size : mProductItem.getSizes()) {
+            if(size.getAvailable()) chipCloudProductSizes.addChip(size.getSize());
+        }
+        chipCloudProductSizes.setSelectedChip(0);
+    }
 
 }

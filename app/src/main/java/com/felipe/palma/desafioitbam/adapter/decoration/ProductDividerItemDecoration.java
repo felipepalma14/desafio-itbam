@@ -12,6 +12,10 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+/**
+ * Created by Felipe Palma on 03/07/2019.
+ */
+
 public class ProductDividerItemDecoration extends RecyclerView.ItemDecoration {
 
     private static final int[] ATTRS = new int[]{

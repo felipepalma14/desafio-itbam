@@ -2,7 +2,6 @@ package com.felipe.palma.desafioitbam.mvp;
 
 import com.felipe.palma.desafioitbam.model.Product;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**

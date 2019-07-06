@@ -27,7 +27,7 @@ import java.util.List;
 /**
  * Created by Felipe Palma on 03/07/2019.
  */
-public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHolder> implements Filterable {
+public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHolder>  {
 
     private Context context;
     private List<Product> productList;
@@ -126,36 +126,6 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
         return productListFiltered.size();
     }
 
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
-                    productListFiltered = productList;
-                } else {
-                    List<Product> filteredList = new ArrayList<>();
-                    for (Product row : productList) {
-                        if (row.getName().toLowerCase().contains(charString.toLowerCase())) {
-                            filteredList.add(row);
-                        }
-                    }
-                    productListFiltered = filteredList;
-                }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = productListFiltered;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                productListFiltered = (ArrayList<Product>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
-    }
 
 }
 

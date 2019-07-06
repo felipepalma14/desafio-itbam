@@ -1,6 +1,7 @@
 package com.felipe.palma.desafioitbam;
 
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -25,6 +26,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
@@ -50,9 +52,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     TextView textCartItemCount;
     ChipCloud chipCloudProductSizes;
     ImageView img_product_image;
+    ProgressDialog dialog;
     Button btn_cart;
 
-    final Context context = this;
     private CollapsingToolbarLayout collapsingToolbarLayout;
     private AppBarLayout appBarLayout;
 
@@ -126,9 +128,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void displayData() {
-
         txt_product_name.setText(mProductItem.getName());
-
         if (mProductItem.getImage().isEmpty()){
             Picasso.with(this)
                     .load(R.drawable.ic_no_image)
@@ -175,41 +175,31 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     public void inputDialog() {
+        dialog = ProgressDialog.show(ProductDetailActivity.this, "",
+                "Aguarde...", true);
 
-        LayoutInflater layoutInflaterAndroid = LayoutInflater.from(context);
+        /*
+        Simulação de processamento
+         */
+        dialog.show();
+        new Thread(() -> {
 
-        View mView = layoutInflaterAndroid.inflate(R.layout.input_dialog, null);
+                this.runOnUiThread(new Runnable(){
 
-        AlertDialog.Builder alert = new AlertDialog.Builder(context);
-        alert.setView(mView);
+                    @Override
+                    public void run() {
+                        try {
+                            Thread.sleep(2000);
+                            dialog.dismiss();
+                            addItemToCart();
 
-        final EditText edtQuantity = mView.findViewById(R.id.userInputDialog);
-        alert.setCancelable(false);
-        int maxLength = 3;
-        edtQuantity.setFilters(new InputFilter[]{new InputFilter.LengthFilter(maxLength)});
-        edtQuantity.setInputType(InputType.TYPE_CLASS_NUMBER);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
 
-        alert.setPositiveButton("ADD", (dialog, whichButton) -> {
-            String temp = edtQuantity.getText().toString();
-            int quantity = 0;
-
-            if (!temp.equalsIgnoreCase("")) {
-
-
-
-            } else {
-                dialog.cancel();
-            }
-        });
-
-        alert.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
-                dialog.cancel();
-            }
-        });
-
-        AlertDialog alertDialog = alert.create();
-        alertDialog.show();
+        }).start();
 
     }
 
@@ -259,32 +249,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         return true;
     }
 
-    private void showSettingsDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(ProductDetailActivity.this);
-        builder.setTitle("PERMISSAO");
-        builder.setMessage("PERMISSAO");
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-                openSettings();
-            }
-        });
-        builder.setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-        builder.show();
-    }
-
-    private void openSettings() {
-        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-        Uri uri = Uri.fromParts("package", getPackageName(), null);
-        intent.setData(uri);
-        startActivityForResult(intent, 101);
-    }
 
     // REPETIDO
     private void setupBadge() {
@@ -299,4 +263,9 @@ public class ProductDetailActivity extends AppCompatActivity {
         chipCloudProductSizes.setSelectedChip(0);
     }
 
+    private void addItemToCart(){
+        Toast.makeText(getBaseContext(), "Produto inserido no carrinho", Toast.LENGTH_LONG).show();
+        finish();
+
+    }
 }

@@ -101,10 +101,6 @@ public class MainActivity extends AppCompatActivity  implements MainContract.Mai
     private RecyclerItemClickListener recyclerItemClickListener = new RecyclerItemClickListener() {
         @Override
         public void onItemClick(Product item) {
-
-            Toast.makeText(MainActivity.this,
-                    "List title:  " + item.getName(),
-                    Toast.LENGTH_LONG).show();
             Intent mIntent = new Intent(MainActivity.this,ProductDetailActivity.class);
             mIntent.putExtra("PRODUCT_ITEM",item);
             startActivity(mIntent);

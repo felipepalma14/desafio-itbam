@@ -79,14 +79,15 @@ public class ProductAdapter  extends RecyclerView.Adapter<ProductAdapter.ViewHol
 
 
 
-        if(!product.getDiscountPercentage().equals("")) {
+        if(!product.getDiscountPercentage().equals("") && product.getOnSale()) {
             holder.productRegularPrice.setText(product.getRegularPrice());
             holder.productRegularPrice.setPaintFlags(holder.productRegularPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.productDiscount.setText(product.getDiscountPercentage());
+            holder.productDiscount.setRibbonFillColor(context.getResources().getColor(R.color.txt_price_color));
         }else{
             if (!product.getOnSale()){
-                holder.productDiscount.setRibbonFillColor(context.getResources().getColor(R.color.grey));
                 holder.productDiscount.setText("Sem Stock");
+                holder.productDiscount.setRibbonFillColor(context.getResources().getColor(R.color.grey));
             }else {
                 holder.productRegularPrice.setVisibility(View.INVISIBLE);
                 holder.productDiscount.setVisibility(View.GONE);

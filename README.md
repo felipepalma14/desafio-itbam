@@ -4,7 +4,7 @@
  [aqui](attachments/Teste_Android_v3.pdf)
  
 ## DEMO
-[![Assista](app/src/main/res/drawable/splash.jpg)](attachments/demo.mp4)
+![](attachments/demo.gif)
 
 # Guia desenvolvimento
 * A URL contendo os dados necessários para montagem da tela é:
